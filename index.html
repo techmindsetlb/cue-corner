@@ -513,7 +513,7 @@
   <h1 class="cafe-name" id="cafeName"><em>Café</em></h1>
   <p class="cafe-tagline" id="cafeTagline">— Loading… —</p>
   <div class="divider-ornament"><span>✦</span></div>
-  <div class="scroll-hint"><span>Explore Menu</span><div class="scroll-arrow"></div></div>
+  <div class="scroll-hint" onclick="document.querySelector('.cat-nav-wrap').scrollIntoView({behavior:'smooth'})" style="cursor:pointer;"><span>Explore Menu</span><div class="scroll-arrow"></div></div>
 </header>
 
 <nav class="cat-nav-wrap" aria-label="Menu categories">
