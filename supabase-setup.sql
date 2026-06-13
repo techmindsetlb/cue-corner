@@ -134,6 +134,14 @@ CREATE POLICY "anon_delete_menu_images"
   USING (bucket_id = 'menu-images');
 
 -- ============================================================
+-- ARABIC LANGUAGE SUPPORT — Add Arabic name columns
+-- ============================================================
+
+ALTER TABLE items ADD COLUMN IF NOT EXISTS name_ar TEXT DEFAULT '';
+ALTER TABLE items ADD COLUMN IF NOT EXISTS description_ar TEXT DEFAULT '';
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS name_ar TEXT DEFAULT '';
+
+-- ============================================================
 -- DONE. Now grab your Project URL + anon key from:
 -- Supabase Dashboard → Settings → API
 -- and paste them into config.js
