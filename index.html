@@ -88,11 +88,16 @@
     }
 
     /* ===== LANG TOGGLE ===== */
-    .lang-toggle {
+    .top-toggles {
       position: fixed;
       top: var(--space-md);
       right: var(--space-md);
       z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .lang-toggle, .currency-toggle {
       display: flex;
       gap: 2px;
       background: var(--c-surface);
@@ -100,7 +105,7 @@
       border-radius: var(--radius-md);
       padding: 2px;
     }
-    .lang-btn {
+    .toggle-btn {
       padding: 4px 10px;
       border: none;
       background: none;
@@ -113,14 +118,14 @@
       border-radius: 4px;
       transition: all 150ms ease;
     }
-    .lang-btn.active {
+    .toggle-btn.active {
       background: var(--c-gold-dim);
       color: var(--c-gold);
     }
-    .lang-btn:hover { color: var(--c-text); }
+    .toggle-btn:hover { color: var(--c-text); }
 
     /* RTL */
-    [dir="rtl"] .lang-toggle { right: auto; left: var(--space-md); }
+    [dir="rtl"] .top-toggles { right: auto; left: var(--space-md); }
     [dir="rtl"] .menu-card { flex-direction: row-reverse; }
     [dir="rtl"] .category-header { flex-direction: row-reverse; }
     [dir="rtl"] .category-line {
@@ -497,9 +502,15 @@
   ⚠ Could not connect to the menu database. Please check your Supabase configuration in <code>config.js</code>.
 </div>
 
-<div class="lang-toggle" id="langToggle">
-  <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
-  <button class="lang-btn" data-lang="ar" onclick="setLang('ar')">AR</button>
+<div class="top-toggles">
+  <div class="lang-toggle" id="langToggle">
+    <button class="toggle-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+    <button class="toggle-btn" data-lang="ar" onclick="setLang('ar')">AR</button>
+  </div>
+  <div class="currency-toggle" id="currencyToggle">
+    <button class="toggle-btn" data-currency="usd" onclick="setCurrency('usd')">$</button>
+    <button class="toggle-btn" data-currency="lbp" onclick="setCurrency('lbp')">ل.ل</button>
+  </div>
 </div>
 
 <header class="site-header">
@@ -575,11 +586,12 @@ const t = {
 };
 
 let currentLang = localStorage.getItem('lang') || 'en';
+let currency = localStorage.getItem('currency') || 'usd';
 
 function setLang(lang) {
   currentLang = lang;
   localStorage.setItem('lang', lang);
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.querySelectorAll('.lang-toggle .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   document.documentElement.lang = lang;
   // Update static text
@@ -588,6 +600,18 @@ function setLang(lang) {
   const sh = document.querySelector('.scroll-hint span');
   if (sh) sh.textContent = t[lang].explore;
   if (categories.length) { renderNav(); renderMenu(); }
+}
+
+function setCurrency(cur) {
+  currency = cur;
+  localStorage.setItem('currency', cur);
+  document.querySelectorAll('.currency-toggle .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.currency === cur));
+  if (categories.length) {
+    renderMenu();
+    if (document.getElementById('modalOverlay').classList.contains('open')) {
+      closeModal();
+    }
+  }
 }
 
 // ===== INIT SUPABASE =====
@@ -756,7 +780,11 @@ function buildCard(item, idx) {
 
 function formatPrice(p) {
   const num = parseFloat(p);
-  return (num % 1 === 0 ? num.toFixed(0) : num.toFixed(2)) + ' LBP';
+  if (currency === 'lbp') {
+    const rate = parseFloat(settings.exchange_rate) || 90000;
+    return (num * rate).toLocaleString() + ' ل.ل';
+  }
+  return '$' + (num % 1 === 0 ? num.toFixed(0) : num.toFixed(2));
 }
 
 // ===== MODAL =====
@@ -820,8 +848,9 @@ function esc(s) {
 
 // ===== BOOT =====
 async function init() {
-  // Init language
+  // Init language & currency
   setLang(currentLang);
+  setCurrency(currency);
   if (!sb) return;
   showSkeletons();
   try {

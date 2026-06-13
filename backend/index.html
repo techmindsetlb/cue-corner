@@ -539,6 +539,15 @@
           </div>
           </div>
         </div>
+      </div>          <div class="settings-card">
+        <p class="settings-section-title">Pricing</p>
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label class="form-label" for="setExchangeRate">Exchange Rate (LBP per $1)</label>
+            <input type="number" class="form-input" id="setExchangeRate" placeholder="90000" min="1" />
+            <p class="form-hint">Used to convert prices to LBP on the menu. Default: 90,000 LBP/$.</p>
+          </div>
+        </div>
       </div>
 
       <div class="settings-card">
@@ -1216,8 +1225,8 @@ async function deleteCat(id) {
 function loadSettingsForm() {
   document.getElementById('setCafeName').value    = dbSettings.cafe_name    || '';
   document.getElementById('setCafeTagline').value = dbSettings.cafe_tagline || '';
-  document.getElementById('setFooterText').value  = dbSettings.footer_text  || '';
-  document.getElementById('setLogoUrl').value     = dbSettings.cafe_logo    || '';
+  document.getElementById('setFooterText').value  = dbSettings.footer_text  || '';    document.getElementById('setLogoUrl').value     = dbSettings.cafe_logo    || '';
+    document.getElementById('setExchangeRate').value = dbSettings.exchange_rate || '90000';
   const logo = dbSettings.cafe_logo;
   if (logo) {
     document.getElementById('logoPreview').src = logo;
@@ -1232,7 +1241,8 @@ async function saveSettings() {
     ['cafe_name',    document.getElementById('setCafeName').value.trim()],
     ['cafe_tagline', document.getElementById('setCafeTagline').value.trim()],
     ['footer_text',  document.getElementById('setFooterText').value.trim()],
-    ['cafe_logo',    logoUrl]
+    ['cafe_logo',    logoUrl],
+    ['exchange_rate', document.getElementById('setExchangeRate').value.trim()]
   ];
   const { error } = await sb.from('settings').upsert(
     pairs.map(([key, value]) => ({ key, value })),
