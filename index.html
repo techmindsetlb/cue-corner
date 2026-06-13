@@ -329,6 +329,16 @@
       background: var(--c-surface-2);
       overflow: hidden;
     }
+    .card-icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--c-surface-2);
+    }
+    .card-icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
     @media (min-width: 480px) {
       .card-image-wrap { width: 120px; }
     }
@@ -718,13 +728,14 @@ function buildCard(item, idx) {
   card.setAttribute('role', 'button');
 
   const badge = (item.badges||[]).length ? `<span class="card-badge">${esc(item.badges[0])}</span>` : '';
-  const imgHTML = item.image_url
+  const hasImg = !!item.image_url;
+  const innerImg = hasImg
     ? `<img src="${esc(item.image_url)}" alt="${esc(item.name)}" class="card-image" loading="lazy" />`
-    : '';
-  const arName = '';
+    : `<span class="card-icon">${esc(item.emoji || '🍽️')}</span>`;
+  const wrapClass = 'card-image-wrap' + (hasImg ? '' : ' card-icon-wrap');
 
   card.innerHTML = `
-    ${imgHTML ? `<div class="card-image-wrap">${imgHTML}</div>` : ''}
+    <div class="${wrapClass}">${innerImg}</div>
     <div class="card-body">
       <h3 class="card-name">${esc(item.name)}</h3>
       <p class="card-desc">${esc(item.description || '')}</p>
