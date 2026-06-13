@@ -616,6 +616,14 @@
           <label class="form-label" for="itemDesc">Description</label>
           <textarea class="form-textarea" id="itemDesc" placeholder="Describe the dish…"></textarea>
         </div>
+        <div class="form-group">
+          <label class="form-label" for="itemNameAr">Name (Arabic) <small style="color:var(--c-text-dim)">optional</small></label>
+          <input type="text" class="form-input" id="itemNameAr" placeholder="اسم العنصر بالعربية" />
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label" for="itemDescAr">Description (Arabic) <small style="color:var(--c-text-dim)">optional</small></label>
+          <textarea class="form-textarea" id="itemDescAr" placeholder="وصف العنصر بالعربية…"></textarea>
+        </div>
         <div class="form-group form-full">
           <label class="form-label">Badges</label>
           <div class="badge-check-group">
@@ -670,6 +678,10 @@
         <div class="form-group">
           <label class="form-label" for="catEmoji">Emoji</label>
           <input type="text" class="form-input" id="catEmoji" placeholder="🍮" maxlength="4" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="catNameAr">Name (Arabic) <small style="color:var(--c-text-dim)">optional</small></label>
+          <input type="text" class="form-input" id="catNameAr" placeholder="اسم الفئة بالعربية" />
         </div>
         <div class="form-group">
           <label class="form-label" for="catOrder">Display Order</label>
@@ -931,7 +943,7 @@ function openItemSheet(id) {
   editingItemId = id;
   document.getElementById('itemSheetTitle').textContent = id ? 'Edit Item' : 'Add Item';
   // Reset fields
-  ['itemName','itemPrice','itemEmoji','itemDesc','itemTags','itemCalories','itemAllergens','itemPrep','itemImageUrl'].forEach(f => {
+  ['itemName','itemPrice','itemEmoji','itemDesc','itemNameAr','itemDescAr','itemTags','itemCalories','itemAllergens','itemPrep','itemImageUrl'].forEach(f => {
     document.getElementById(f).value = '';
   });
   document.getElementById('itemSortOrder').value = items.length + 1;
@@ -946,6 +958,8 @@ function openItemSheet(id) {
     document.getElementById('itemPrice').value     = item.price || '';
     document.getElementById('itemEmoji').value     = item.emoji || '';
     document.getElementById('itemDesc').value      = item.description || '';
+    document.getElementById('itemNameAr').value    = item.name_ar || '';
+    document.getElementById('itemDescAr').value    = item.description_ar || '';
     document.getElementById('itemTags').value      = (item.tags||[]).join(', ');
     document.getElementById('itemCalories').value  = item.calories || '';
     document.getElementById('itemAllergens').value = item.allergens || '';
@@ -1035,6 +1049,8 @@ async function saveItem() {
     price:       parseFloat(price),
     emoji:       document.getElementById('itemEmoji').value.trim(),
     description: document.getElementById('itemDesc').value.trim(),
+    name_ar:     document.getElementById('itemNameAr').value.trim(),
+    description_ar: document.getElementById('itemDescAr').value.trim(),
     badges, tags,
     image_url:   imageUrl,
     calories:    document.getElementById('itemCalories').value.trim(),
@@ -1133,12 +1149,13 @@ async function onDrop(e) {
 function openCatSheet(id) {
   editingCatId = id;
   document.getElementById('catSheetTitle').textContent = id ? 'Edit Category' : 'Add Category';
-  ['catName','catEmoji','catOrder'].forEach(f => document.getElementById(f).value = '');
+  ['catName','catEmoji','catOrder','catNameAr'].forEach(f => document.getElementById(f).value = '');
   if (id) {
     const cat = categories.find(c => c.id === id);
     if (!cat) return;
     document.getElementById('catName').value  = cat.name;
     document.getElementById('catEmoji').value = cat.emoji || '';
+    document.getElementById('catNameAr').value = cat.name_ar || '';
     document.getElementById('catOrder').value = cat.sort_order || 1;
   } else {
     document.getElementById('catOrder').value = categories.length + 1;
@@ -1158,6 +1175,7 @@ async function saveCat() {
   if (!name) { toast('Name required', 'error'); return; }
   const payload = {
     name,
+    name_ar:    document.getElementById('catNameAr').value.trim(),
     emoji:      document.getElementById('catEmoji').value.trim(),
     sort_order: parseInt(document.getElementById('catOrder').value) || 1
   };

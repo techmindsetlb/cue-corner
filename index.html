@@ -661,7 +661,10 @@ function renderNav() {
 
   const allBtn = mkNavBtn(t[currentLang].all, 'all');
   nav.appendChild(allBtn);
-  categories.forEach(cat => nav.appendChild(mkNavBtn((cat.emoji || '') + ' ' + cat.name, cat.id)));
+  categories.forEach(cat => {
+    const catName = currentLang === 'ar' && cat.name_ar ? cat.name_ar : cat.name;
+    nav.appendChild(mkNavBtn((cat.emoji || '') + ' ' + catName, cat.id));
+  });
 }
 
 function mkNavBtn(label, id) {
@@ -699,7 +702,7 @@ function renderMenu() {
     sec.style.transitionDelay = (ci * 70) + 'ms';
     sec.innerHTML = `
       <div class="category-header">
-        <h2 class="category-title">${(cat.emoji || '') + ' ' + cat.name}</h2>
+        <h2 class="category-title">${(cat.emoji || '') + ' ' + (currentLang === 'ar' && cat.name_ar ? esc(cat.name_ar) : esc(cat.name))}</h2>
         <div class="category-line"></div>
       </div>
       <div class="menu-list"></div>
@@ -737,8 +740,8 @@ function buildCard(item, idx) {
   card.innerHTML = `
     <div class="${wrapClass}">${innerImg}</div>
     <div class="card-body">
-      <h3 class="card-name">${esc(item.name)}</h3>
-      <p class="card-desc">${esc(item.description || '')}</p>
+      <h3 class="card-name">${currentLang === 'ar' && item.name_ar ? esc(item.name_ar) : esc(item.name)}</h3>
+      <p class="card-desc">${currentLang === 'ar' && item.description_ar ? esc(item.description_ar) : esc(item.description || '')}</p>
       <div class="card-footer">
         <span class="card-price">${formatPrice(item.price)}</span>
         ${badge}
@@ -758,9 +761,9 @@ function formatPrice(p) {
 
 // ===== MODAL =====
 function openModal(item) {
-  document.getElementById('modalName').textContent  = item.name;
+  document.getElementById('modalName').textContent  = currentLang === 'ar' && item.name_ar ? item.name_ar : item.name;
   document.getElementById('modalPrice').textContent = formatPrice(item.price);
-  document.getElementById('modalDesc').textContent  = item.description || '';
+  document.getElementById('modalDesc').textContent  = currentLang === 'ar' && item.description_ar ? item.description_ar : item.description || '';
 
   document.getElementById('modalImgWrap').innerHTML = item.image_url
     ? `<img src="${esc(item.image_url)}" alt="${esc(item.name)}" class="modal-image" />`
